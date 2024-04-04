@@ -1,0 +1,13 @@
+clusters:
+    cluster0:
+        url: https://alertmanager-main-openshift-monitoring.apps.cloud.example.com
+        token: eyJhbGciOiJSUzI1NiIsImtpZCI6IlRkUnBKcmktV1ZlbkZJOVZCOTNYWlNFcEZrWGI2
+        severity: ["warning", "critical", "info"]
+    cluster1:
+        url: https://alertmanager-main-openshift-monitoring.apps.lab.example.com
+        token: eyJhbGciOiJSUzI1NiIsImtpZCI6InFOYk0wNHA0YWdzZ3dJRGhNZ0xUWExIY0EtYlV
+        severity: ["warning", "critical"]
+    cluster2:
+        url: https://alertmanager-main-openshift-monitoring.apps.qa.example.com
+        token: eyJhbGciOiJSUzI1NiIsImtpZCI6ImY5bkRfN3FIQWw5Y3VUalhtd0Rscy1PS2NnWH
+        severity: ["warning", "critical", "info"]
