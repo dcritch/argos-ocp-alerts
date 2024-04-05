@@ -2,7 +2,6 @@
 """
 script to display alerts from openshift clusters
 """
-
 import json
 import os
 import ssl
@@ -21,16 +20,11 @@ def main():
 
     for cluster in clusters:
         clusters[cluster]["alerts"] = get_alerts(
-            clusters[cluster]["url"], clusters[cluster]["token"]
+            clusters[cluster]["url"],
+            clusters[cluster]["token"],
+            clusters[cluster]["severity"],
         )
-        if clusters[cluster]["alerts"]:
-            clusters[cluster]["alerts"] = [
-                a
-                for a in clusters[cluster]["alerts"]
-                if a["labels"]["severity"] in clusters[cluster]["severity"]
-                and a["status"]["state"] != "suppressed"
-            ]
-            alert_count += len(clusters[cluster]["alerts"])
+        alert_count += len(clusters[cluster]["alerts"])
 
     if alert_count:
         print(f"openshift: <span color='red'>{alert_count}</span>")
@@ -46,14 +40,14 @@ def main():
             for alert in alerts:
                 annotations = alert["annotations"]
                 if "description" in annotations.keys():
-                    msg = annotations['description']
+                    msg = annotations["description"]
                 if "message" in annotations.keys():
-                    msg = annotations['message']
-                msg = msg.replace('\n', '')
-                print(f"--<i>{alert['labels']['alertname']}</i>: {msg} | length=128")
+                    msg = annotations["message"]
+                msg = msg.replace("\n", "")
+                print(f"--<b>{alert['labels']['alertname']}</b>: {msg} | length=128")
         else:
             print(f"<span color='green'>{len(alerts)}</span>")
-            print("no active alerts")
+            print("--no active alerts")
 
 
 def parse_config():
@@ -69,7 +63,7 @@ def parse_config():
     return config["clusters"]
 
 
-def get_alerts(url, token):
+def get_alerts(url, token, severity):
     """
     get alerts
     """
@@ -82,9 +76,29 @@ def get_alerts(url, token):
             status_code = response.status
             alerts = response.read()
     except (urllib.error.URLError, urllib.error.HTTPError) as error:
-        sys.exit(f"could not retrieve alerts: {error}")
+        error = str(error)
+        error = error.replace(">", "")
+        error = error.replace("<", "")
+        alert = {
+            "labels": {
+                "alertname": "could not contact cluster",
+                "severity": "critical",
+            },
+            "annotations": {"message": error},
+            "status": {"state": "active"},
+        }
+        alerts = [alert]
+        return alerts
     if status_code == 200 and alerts:
-        return json.loads(alerts.decode("utf-8"))
+        alerts = json.loads(alerts.decode("utf-8"))
+        alerts = [
+            alert
+            for alert in alerts
+            if alert["labels"]["severity"] in severity
+            and alert["status"]["state"] != "suppressed"
+        ]
+        return alerts
+
     return None
 
 

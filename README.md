@@ -37,8 +37,12 @@ Any valid token with sufficient privileges will do, such as
 oc get secret -n openshift-monitoring $(oc get secret -n openshift-monitoring | grep prometheus-k8s-token | awk '{print $1}')  -o json | jq -r '.data.token|@base64d'
 ~~~
 
-Copy `ocp-alerts.py` to `~/.config/argos` and rename it to reflect desired update interval in seconds. For example, to run the script and update the status every 15 minutes, the script should be `~/.config/argos/ocp-alerts.1500s+.py`.
+Copy `ocp_alerts.py` to `~/.config/argos` and rename it to reflect desired update interval in seconds. For example, to run the script and update the status every 15 minutes, the script should be `~/.config/argos/ocp_alerts.1500s+.py`.
 
+Or you could just symlink it:
+~~~
+ln -s ~/code/path/to/repo/ocp_alerts.py ~/.config/argos/ocp_alerts.1500s+.py
+~~~
 ## Demo
 
 This is how it should look:
