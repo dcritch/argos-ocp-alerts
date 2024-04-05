@@ -1,4 +1,4 @@
-# OCP Alerts Extension for Argos
+# OpenShift Alerts Extension for Argos
 This repo contains a simple extension for [argos](https://github.com/p-e-w/argos) - and so therefore perhaps [xbar](https://github.com/matryer/xbar)* - to display active alerts for a configured set of OpenShift clusters.
 
 \* not tested
