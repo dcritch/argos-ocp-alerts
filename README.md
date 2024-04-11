@@ -27,12 +27,12 @@ clusters:
         severity: ["warning", "critical", "info"]
 ~~~
 
-The url can be determined with
+The url can be determined with:
 ~~~
 oc get routes -n openshift-monitoring prometheus-k8s -o json | jq -r .spec.host
 ~~~
 
-Any valid token with sufficient privileges will do, such as
+Any valid token with sufficient privileges will do, such as:
 ~~~
 oc get secret -n openshift-monitoring $(oc get secret -n openshift-monitoring | grep prometheus-k8s-token | awk '{print $1}')  -o json | jq -r '.data.token|@base64d'
 ~~~
