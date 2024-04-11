@@ -16,8 +16,6 @@ def main():
     """
 
     clusters = parse_config()
-    alert_count = 0
-    status = "green"
 
     for cluster in clusters:
         clusters[cluster]["alerts"], clusters[cluster]["reachable"] = get_alerts(
@@ -25,7 +23,7 @@ def main():
             clusters[cluster]["token"],
             clusters[cluster]["severity"],
         )
-   
+
     status = set_status(clusters)
 
     print(f"openshift clusters: <span color='green'>{status}</span>")
@@ -50,6 +48,7 @@ def main():
                     msg = annotations["message"]
                 msg = msg.replace("\n", "")
                 print(f"--<b>{alert['labels']['alertname']}</b>: {msg} | length=128")
+
 
 def set_status(clusters):
     """
@@ -114,6 +113,7 @@ def get_alerts(url, token, severity):
         return alerts, True
 
     return None
+
 
 if __name__ == "__main__":
     main()
