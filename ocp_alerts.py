@@ -26,7 +26,7 @@ def main():
 
     status = set_status(clusters)
 
-    print(f"openshift clusters: <span color='green'>{status}</span>")
+    print(f"openshift clusters: {status}")
 
     for cluster in clusters:
         print("---")
