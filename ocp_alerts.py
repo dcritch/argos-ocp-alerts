@@ -17,26 +17,31 @@ def main():
 
     clusters = parse_config()
     alert_count = 0
+    status = "green"
 
     for cluster in clusters:
-        clusters[cluster]["alerts"] = get_alerts(
+        clusters[cluster]["alerts"], clusters[cluster]["reachable"] = get_alerts(
             clusters[cluster]["url"],
             clusters[cluster]["token"],
             clusters[cluster]["severity"],
         )
-        alert_count += len(clusters[cluster]["alerts"])
+   
+    status = set_status(clusters)
 
-    if alert_count:
-        print(f"openshift: <span color='red'>{alert_count}</span>")
-    else:
-        print(f"openshift: <span color='green'>{alert_count}</span>")
+    print(f"openshift clusters: <span color='green'>{status}</span>")
 
     for cluster in clusters:
         print("---")
         alerts = clusters[cluster]["alerts"]
         print(f"<b>{cluster}</b>: ", end="")
-        if alerts:
+        if not clusters[cluster]["reachable"]:
+            print(f"<span color='yellow'>{len(alerts)}</span>")
+        elif clusters[cluster]["reachable"] and len(alerts) > 0:
             print(f"<span color='red'>{len(alerts)}</span>")
+        else:
+            print(f"<span color='green'>{len(alerts)}</span>")
+            print("--no active alerts")
+        if alerts:
             for alert in alerts:
                 annotations = alert["annotations"]
                 if "description" in annotations.keys():
@@ -45,9 +50,18 @@ def main():
                     msg = annotations["message"]
                 msg = msg.replace("\n", "")
                 print(f"--<b>{alert['labels']['alertname']}</b>: {msg} | length=128")
-        else:
-            print(f"<span color='green'>{len(alerts)}</span>")
-            print("--no active alerts")
+
+def set_status(clusters):
+    """
+    determine overall status of all clusters
+    """
+    status = "🟢"
+    for cluster in clusters:
+        if (not clusters[cluster]["reachable"]) and (status == "🟢"):
+            status = "🟡"
+        if clusters[cluster]["reachable"] and len(clusters[cluster]["alerts"]) > 0:
+            status = "🔴"
+    return status
 
 
 def parse_config():
@@ -88,7 +102,7 @@ def get_alerts(url, token, severity):
             "status": {"state": "active"},
         }
         alerts = [alert]
-        return alerts
+        return alerts, False
     if status_code == 200 and alerts:
         alerts = json.loads(alerts.decode("utf-8"))
         alerts = [
@@ -97,9 +111,9 @@ def get_alerts(url, token, severity):
             if alert["labels"]["severity"] in severity
             and alert["status"]["state"] != "suppressed"
         ]
-        return alerts
+        return alerts, True
 
     return None
 
-
-main()
+if __name__ == "__main__":
+    main()
