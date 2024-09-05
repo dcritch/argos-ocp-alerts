@@ -42,6 +42,9 @@ def main():
         if alerts:
             for alert in alerts:
                 annotations = alert["annotations"]
+                msg = ""
+                if "summary" in annotations.keys():
+                    msg = annotations["summary"]
                 if "description" in annotations.keys():
                     msg = annotations["description"]
                 if "message" in annotations.keys():
