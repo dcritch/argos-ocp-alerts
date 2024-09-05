@@ -47,8 +47,12 @@ def main():
                     msg = annotations["summary"]
                 if "description" in annotations.keys():
                     msg = annotations["description"]
-                if "message" in annotations.keys():
+                elif "message" in annotations.keys():
                     msg = annotations["message"]
+                elif "summary" in annotations.keys():
+                    msg = annotations["summary"]
+                else:
+                    msg = "No Data"
                 msg = msg.replace("\n", "")
                 print(f"--<b>{alert['labels']['alertname']}</b>: {msg} | length=128")
 
