@@ -92,7 +92,7 @@ def get_alerts(url, token, severity):
     ssl_context = ssl._create_unverified_context()
     request = urllib.request.Request(alerts_url, None, headers)
     try:
-        with urllib.request.urlopen(request, context=ssl_context) as response:
+        with urllib.request.urlopen(request, context=ssl_context, timeout=2) as response:
             status_code = response.status
             alerts = response.read()
     except (urllib.error.URLError, urllib.error.HTTPError) as error:
